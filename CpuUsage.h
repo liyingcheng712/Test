@@ -5,7 +5,7 @@ class CpuUsage
 public:
 	CpuUsage(void);
 
-	short  GetUsage();
+	double  GetUsage();
 private:
 	ULONGLONG SubtractTimes(const FILETIME& ftA, const FILETIME& ftB);
 	bool EnoughTimePassed();
@@ -19,7 +19,7 @@ private:
 	FILETIME m_ftPrevProcKernel;
 	FILETIME m_ftPrevProcUser;
 
-	short m_nCpuUsage;
+	double m_nCpuUsage;
 	ULONGLONG m_dwLastRun;
 	volatile LONG m_lRunCount;
 };

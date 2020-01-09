@@ -24,11 +24,11 @@ m_lRunCount(0)
 24: * If the method is recalled to quickly, the previous value
 25: * is returned.
 26: ***********************************************/
-short CpuUsage::GetUsage()
+double CpuUsage::GetUsage()
 {
 	//create a local copy to protect against race conditions in setting the 
 	//member variable
-	short nCpuCopy = m_nCpuUsage;
+	double nCpuCopy = m_nCpuUsage;
 	if (::InterlockedIncrement(&m_lRunCount) == 1)
 	{
 		/*
@@ -76,7 +76,7 @@ short CpuUsage::GetUsage()
 
 			if (nTotalSys > 0)
 			{
-				m_nCpuUsage = (short)((100.0 * nTotalProc) / nTotalSys);
+				m_nCpuUsage = ((100.0* (double)nTotalProc) / (double)nTotalSys) ;
 			}
 		}
 

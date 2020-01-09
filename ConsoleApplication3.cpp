@@ -4,6 +4,14 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include "CpuUsage.h"
+#include <windows.h>
+#include <mutex>
+
+DWORD WINAPI EatItThreadProc(LPVOID lpParam);
+DWORD WINAPI WatchItThreadProc(LPVOID lpParam);
+CpuUsage usage;
+
 using namespace std;
 void fun() {
 	cout << std::this_thread::get_id() << endl;
@@ -18,16 +26,38 @@ void fun1() {
 	std::this_thread::sleep_for(std::chrono::microseconds(100000));
 
 }
-int main()
+int main(int argc ,char* argv[])
 {
-    std::cout << "Hello World!\n";
-	thread thread1(fun);
-	thread thread2(fun1);
-	thread1.detach();
-	thread2.detach();
-	getchar();
+	//创建线程消耗cpu时间
+	CreateThread(NULL,0,EatItThreadProc,NULL,0,NULL);
+	CreateThread(NULL, 0, EatItThreadProc, NULL, 0, NULL);
+		//创建线程监视当前进程的cpu占用率
+	CreateThread(NULL,0,WatchItThreadProc,NULL,0,NULL);
+	CreateThread(NULL, 0, WatchItThreadProc, NULL, 0, NULL);
+	while (true) {
+		Sleep(1000);
+	}
+	return 0;
+	
 }
-
+DWORD WINAPI WatchItThreadProc(LPVOID lpParam) {
+	while (true) {
+		double cpuUsage = (double)usage.GetUsage();
+		printf("Thread id %d:%0.2f%% cpu usage\n",::GetCurrentThreadId(),cpuUsage);
+		Sleep(1000);
+	}
+}
+DWORD WINAPI EatItThreadProc(LPVOID lpPram) {
+	ULONGLONG accum = 0;
+	int *p;
+	while (true) {
+		p = new int[10];
+		delete p;
+		accum++;
+	}
+	
+	printf("%64d\n",accum);
+}
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
 // 调试程序: F5 或调试 >“开始调试”菜单
 
